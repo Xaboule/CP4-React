@@ -1,0 +1,81 @@
+#forms > * {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: white;
+  font-size: 1.5rem;
+}
+
+label > button {
+  padding: 0.7rem;
+  border: red solid 1px;
+  border-radius: 1rem;
+  font-weight: bolder;
+}
+
+#mainForms{
+  width: 50vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+#forms {
+  background-color: rgba(0, 0, 0, 0.445);
+  -moz-appearance: textfield;
+  z-index: 1003;
+  width: 60vw;
+  height: 40vh;
+  position: absolute;
+  border-radius: 5rem;
+  /* margin: auto; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 20%;
+  margin-left: 20vw;
+  /* cursor: pointer; */
+  @media (pointer: coarse) {
+    /* allow-touch-styles { */
+    --widget-height: 28px;
+    --padding: 16px;
+    --spacing: 16px;
+    --font-size: 13px;
+    --input-font-size: 16px;
+    --folder-indent: 10px;
+    --scrollbar-width: 7px;
+    --color-input-min-width: 65px;
+    /* } */
+  }
+}
+form {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-evenly; */
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+#mainForms > div {
+  display: flex;
+  -moz-appearance: textfield;
+  z-index: 1003;
+  height: 30vh;
+  /* margin: auto; */
+  padding: 2px;
+  width: 15rem;
+  /* height: 5rem; */
+}
+
+input {
+  -moz-appearance: textfield;
+  /* height: 1rem; */
+  margin: 0.8rem;
+  width: 15vw;
+}
+
+#name {
+  height: 1.5rem;
+  -moz-appearance: textfield;
+  pointer-events: coarse;
+  /* allow-touch-styles { */
+}

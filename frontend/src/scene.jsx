@@ -7,10 +7,11 @@ import CannonDebugger from 'cannon-es-debugger';
 import Grid from './grid.js';
 import Grid90 from './grid90';
 import { BackSide, DoubleSide } from 'three';
+import Form from '../components/form.jsx';
 // import Rays from './rays';
 import './style.css';
 
-const ThreeScene = () => {
+const ThreeScene = ({ball1, ball2}) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -49,7 +50,6 @@ const ThreeScene = () => {
     );
 
     scene.add(caseBox);
-
     ///////// Plane
     const planeMat = new THREE.MeshStandardMaterial({
       transparent: true,
@@ -196,10 +196,10 @@ const ThreeScene = () => {
     let played = 0;
 
     const player1 = {
-      color: 'blue',
+      color: ball1,
     };
     const player2 = {
-      color: 'red',
+      color: ball2,
     };
 
     const objectsToUpdate = [];
@@ -280,13 +280,13 @@ const ThreeScene = () => {
      */
     const sizes = {
       width: window.innerWidth,
-      height: window.innerHeight -80,
+      height: window.innerHeight - 80,
     };
 
     window.addEventListener('resize', () => {
       // Update sizes
       sizes.width = window.innerWidth;
-      sizes.height = window.innerHeight;
+      sizes.height = window.innerHeight - 80;
 
       // Update camera
       camera.aspect = sizes.width / sizes.height;
@@ -423,8 +423,8 @@ const ThreeScene = () => {
         arrBall[i].rotation.x = Math.sin(elapsedTime * 2) * 2;
       }
 
-     document.addEventListener('mousedown', onMouseDown);
-     document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mousedown', onMouseDown);
+      document.addEventListener('mouseup', onMouseUp);
 
       if (intersection[0] !== undefined && clicked === 1) {
         clicked = 0;
@@ -471,6 +471,10 @@ const ThreeScene = () => {
       world.step(1 / 60, deltaTime, 3);
       // scene.updateMatrixWorld()
       // Update controls
+  
+
+
+ 
       // cannonDebugger.update();
       // Render
       renderer.render(scene, camera);
@@ -486,10 +490,9 @@ const ThreeScene = () => {
 
   return (
     <>
-      <p>tacos</p>
-      <div >
-        <canvas id="myCanvas"/>
-        </div>
+      <div>
+        <canvas id='myCanvas'/>
+      </div>
     </>
   );
 };

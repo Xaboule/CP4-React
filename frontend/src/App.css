@@ -60,18 +60,27 @@ margin-top: 20rem;
 #btn{
   display: flex;
   /* flex-direction: column-reverse; */
-  /* position: absolute; */
+  position: absolute;
   z-index: 200;
   width: 4rem;
   height: 4rem;
   justify-content: space-around;
+  align-content: center;
   /* margin-bottom: 30rem; */
   width:100vw;
+  margin: 0.5rem;
+
 
 
 }
-button{
+#btn > button{
   /* position: absolute; */
-  height: 2rem;
+  justify-content: center;
+  height: 3rem;
   z-index: 2000;
+  display: flex;
+  align-content: center;
+}
+body{
+  background-color: hotpink;
 }
