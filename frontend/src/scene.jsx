@@ -18,8 +18,7 @@ const ThreeScene = ({ball1, ball2}) => {
     /**
      * Base
      */
-    // Debug
-    // const gui = new dat.GUI();
+ 
 
     // Canvas
     const canvas = document.getElementById('myCanvas');
@@ -31,17 +30,22 @@ const ThreeScene = ({ball1, ball2}) => {
     const raycaster = new THREE.Raycaster();
     //lights
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1);
-    mainLight.position.y = 10;
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    mainLight.position.y = 8;
     mainLight.castShadow = true;
+    mainLight.shadow.radius = 1;
     // const helper = new THREE.DirectionalLightHelper(mainLight, 5)
     scene.add(mainLight);
 
-    const pointLight = new THREE.PointLight(0xf000f0, 1);
-    pointLight.position.y = 6;
-    pointLight.position.x = 5;
+    const pointLight = new THREE.SpotLight(0xf000f0, 1);
+    pointLight.position.y = 5;
+    pointLight.position.x = 0;
+    pointLight.position.z = 0;
+    pointLight.penumbra = 0.2;
+    pointLight.castShadow = true;
     scene.add(pointLight);
 
+ 
     scene.fog = new THREE.Fog(0xffffff, 5, 50);
 
     const caseBox = new THREE.Mesh(
@@ -60,7 +64,7 @@ const ThreeScene = ({ball1, ball2}) => {
       new THREE.MeshStandardMaterial({ color: 'pink' })
     );
     plane1.rotation.x = -Math.PI * 0.5;
-    plane1.position.y = -1.0001;
+    plane1.position.y = -1.0002;
     scene.add(plane1);
     const plane2 = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(8, 8),
@@ -275,6 +279,14 @@ const ThreeScene = ({ball1, ball2}) => {
 
     const debugObject = {};
 
+//     const cyl = new THREE.Mesh(
+//       new THREE.CylinderBufferGeometry(0.1,0.1,8),
+// new THREE.MeshBasicMaterial('green')
+//     )
+//     cyl.position.x = 1
+//     cyl.rotation.x = Math.PI*0.5
+//     scene.add(cyl)
+
     /**
      * Sizes
      */
@@ -328,14 +340,13 @@ const ThreeScene = ({ball1, ball2}) => {
     /**
      * Renderer
      */
+    // renderer.physicallyCorrectLights = true;
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     // mountRef.current.appendChild(renderer.domElement);
 
     renderer.shadowMap.enabled = true;
     document.addEventListener('mousemove', onMouseMove);
-    // document.addEventListener('mousedown', onMouseDown)
-    // document.addEventListener('mouseup', onMouseUp)
 
     Grid(world, [0, 2, 0]);
     Grid(world, [0, 2, 2]);
@@ -353,14 +364,14 @@ const ThreeScene = ({ball1, ball2}) => {
     let clicked = 0;
 
     function onMouseDown(event) {
-      console.log('mousedown');
+      // console.log('mousedown');
       event.preventDefault();
       clicked = 1;
     }
     function onMouseUp(event) {
-      console.log('mouseup');
+      // console.log('mouseup');
       clicked = 0;
-      // raycaster.setFromCamera(mouse, camera);
+
     }
     function onMouseMove(event) {
       // event.preventDefault();
@@ -373,10 +384,16 @@ const ThreeScene = ({ball1, ball2}) => {
     const raycaster2 = new THREE.Raycaster();
     const rayOrigin2 = new THREE.Vector3(-3, -0.3, 1);
     const rayDirection2 = new THREE.Vector3(3, -0.3, 1);
-    rayDirection2.normalize();
+    raycaster2.far = 10;
+    // rayDirection2.normalize();
 
-    raycaster.params = { line: { threshold: 1 } };
-
+    // raycaster.params = { line: { threshold: 1 } };
+const rayOr = [
+  (-3,0,-3),  (-3,0,-1),  (-3,0,1), (-3,0,3)
+]
+const rayDir = [
+  (+3,0,-3),  (+3,0,-1),  (+3,0,1),  (+3,0,3)
+]
     /**
  * Animate
  console.log(gridHelper);
@@ -391,11 +408,16 @@ const ThreeScene = ({ball1, ball2}) => {
       const deltaTime = elapsedTime - oldElapsedTime;
       oldElapsedTime = elapsedTime;
 
+
+      // pointLight.position.x = Math.sin(elapsedTime * 0.3) * 2
+      // pointLight.position.z = Math.sin(elapsedTime * 0.3) * 3.4
+      // pointLight2.position.x = -Math.sin(elapsedTime * 0.3) * 2
+      // pointLight2.position.z = Math.sin(elapsedTime * 0.3) * 3.4
       controls.update();
 
       raycaster.setFromCamera(mouse, camera);
-
-      const intersection = raycaster.intersectObjects(cellsToTest);
+ 
+      let intersection = raycaster.intersectObjects(cellsToTest);
       for (const object of cellsToTest) {
         object.material = cubeMat;
         lightTile.material = planeMat;
@@ -435,45 +457,24 @@ const ThreeScene = ({ball1, ball2}) => {
           intersection[0].object.position.z
         );
         const sphere = createSphere(radius, pos);
-        console.log('Sphere Created');
+        // console.log('Sphere Created');
         arrBall.push(sphere);
         played += 1;
 
+      } else null;
         if (clicked > 1 && clicked !== 0) {
           clicked = 0;
           setTimeout(() => {}, '50');
         }
-        raycaster2.set(rayOrigin2, rayDirection2);
-        // if (arrBall.length > 2) {
-        // raycaster.layers.set(4);
-        // raycaster.set(rayOrigin2, rayDirection2);
-        // console.log('arrball', raycaster , arrBall)
-        // setTimeout(()=>{ }, '500')
-        // for (const balls of arrBall) {
-        // console.log('raycast', raycaster, arrBall);
-        const intersection2 = raycaster2.intersectObjects(arrBall);
-        console.log('inter2', raycaster2, intersection2);
-        console.log(raycaster);
-        // if (intersection2 !== undefined) {
-        //   // sphere.material = cubeMat
-        //   sphere.material = new THREE.MeshBasicMaterial({ color: 'yellow' });
-        //   // } else null
-        //   console.log('interrrrrr', intersection2.length);
-        // } else sphere.material.color = '#ff0000';
-      } else null;
+        // raycaster2.set(rayOrigin2, rayDirection2);
 
       for (const object of objectsToUpdate) {
         object.mesh.position.copy(object.body.position);
         object.mesh.quaternion.copy(object.body.quaternion);
       }
 
-      // console.log(arrBall);
       world.step(1 / 60, deltaTime, 3);
-      // scene.updateMatrixWorld()
       // Update controls
-  
-
-
  
       // cannonDebugger.update();
       // Render

@@ -23,6 +23,8 @@ function App() {
   return (
     <div className='App'>
       {!play ? (
+        <>
+        <h1>FourByFour</h1>
         <Form
           name1={name1}
           setName1={setName1}
@@ -33,7 +35,8 @@ function App() {
           setBall1={setBall1}
           ball2={ball2}
           setBall2={setBall2}
-        />
+          />
+          </>
       ) : null}
       {play ? (
         <>

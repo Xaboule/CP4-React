@@ -60,7 +60,7 @@ function Form({
           </form>
         </div>
       </div>
-      <button onClick={()=> setPlay(true)}> Let's Play!</button>
+      <button id='play' onClick={()=> setPlay(true)}> Let's Play!</button>
     </div>
   );
 }
