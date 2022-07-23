@@ -446,7 +446,9 @@ const rayDir = [
       }
 
       document.addEventListener('mousedown', onMouseDown);
+      document.addEventListener('touchstart', onMouseDown);
       document.addEventListener('mouseup', onMouseUp);
+      // document.addEventListener('touchend', onMouseUp);
 
       if (intersection[0] !== undefined && clicked === 1) {
         clicked = 0;
