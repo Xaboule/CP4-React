@@ -375,17 +375,22 @@ const ThreeScene = ({ball1, ball2}) => {
     }
     function onMouseMove(event) {
       // event.preventDefault();
-
+      
       mouse.x = (event.clientX / sizes.width) * 2 - 1;
       mouse.y = -(event.clientY / sizes.height) * 2 + 1;
+      let camus = new THREE.Vector3(0,camera.position.y, camera.position.z)
+
+      raycaster.camera = camera;
+      raycaster.set(camus, mouse);
+      mouse.normalize()
     }
 
     /////RAYCASTER MOVING BACK & FORTH ON Z-AXIS
     const raycaster2 = new THREE.Raycaster();
     const rayOrigin2 = new THREE.Vector3(-3, -0.3, 1);
     const rayDirection2 = new THREE.Vector3(3, -0.3, 1);
-    raycaster2.far = 10;
-    // rayDirection2.normalize();
+
+    rayDirection2.normalize();
 
     // raycaster.params = { line: { threshold: 1 } };
 const rayOr = [
@@ -414,8 +419,10 @@ const rayDir = [
       // pointLight2.position.x = -Math.sin(elapsedTime * 0.3) * 2
       // pointLight2.position.z = Math.sin(elapsedTime * 0.3) * 3.4
       controls.update();
+   
+        // console.log(raycaster)
+        // console.log(raycaster.ray.direction)
 
-      raycaster.setFromCamera(mouse, camera);
  
       let intersection = raycaster.intersectObjects(cellsToTest);
       for (const object of cellsToTest) {
@@ -451,6 +458,12 @@ const rayDir = [
       // document.addEventListener('touchend', onMouseUp);
 
       if (intersection[0] !== undefined && clicked === 1) {
+        console.log(clicked)
+          for(let i = 0; i< rayOr.length; i++){
+            raycaster.set(rayOr[i], rayDir[i])
+            console.log(rayOr[i], rayDir[i])
+            setTimeout(()=>{}, '100')
+          }
         clicked = 0;
         removeEventListener('mousedown', onMouseDown);
         let pos = new THREE.Vector3(
@@ -462,7 +475,6 @@ const rayDir = [
         // console.log('Sphere Created');
         arrBall.push(sphere);
         played += 1;
-
       } else null;
         if (clicked > 1 && clicked !== 0) {
           clicked = 0;
