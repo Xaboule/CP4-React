@@ -382,79 +382,164 @@ const ThreeScene = ({ ball1, ball2 }) => {
     /////RAYCASTER MOVING BACK & FORTH ON Z-AXIS
     const raycaster2 = new THREE.Raycaster();
 
-
     const rayOr = [
       //L->R
-    [-3, -0.3, -3], [-3, -0.3, -1], [-3, -0.3, 1], [-3, -0.3, 3],
-    //Diag L->R 
-    [-3, -0.3, -3], [3, -0.3, -3],
-    //Back->Front
-    [-3, -0.3, -3], [-1, -0.3, -3], [1, -0.3, -3], [3, -0.3, -3],
-       //L->R
-    [-3, 1.3, -3], [-3, 1.3, -1], [-3, 1.3, 1], [-3, 1.3, 3],
-    //Diag L->R
-    [-3, 1.3, -3], [3, 1.3, -3],
-     //Back->Front
-    [-3, 1.3, -3], [-1, 1.3, -3], [1, 1.3, -3], [3, 1.3, -3],
-       //L->R
-    [-3, 2.3, -3], [-3, 2.3, -1], [-3, 2.3, 1], [-3, 2.3, 3],
-        //Diag L->R
-        [-3, 2.3, -3], [3, 2.3, -3],
-     //Back->Front
-    [-3, 2.3, -3], [-1, 2.3, -3], [1, 2.3, -3], [3, 2.3, -3],
-       //L->R
-    [-3, 4, -3], [-3, 4, -1], [-3, 4, 1], [-3, 4, 3],
-        //Diag L->R
-        [-3, 4, -3], [3, 4, -3],
-     //Back->Front
-    [-3, 4, -3], [-1, 4, -3], [1, 4, -3], [3, 4, -3],
+      [-4, -0.3, -3],
+      [-4, -0.3, -3],
+      [-4, -0.3, -1],
+      [-4, -0.3, 1],
+      [-4, -0.3, 3],
+      // //Diag L->R
+      [-4, -0.3, -4],
+      [4, -0.3, -4],
+      // //Back->Front
+      [-3, -0.3, -4],
+      [-1, -0.3, -4],
+      [1, -0.3, -4],
+      [3, -0.3, -4],
+      //L->R
+      [-4, 1.3, -3],
+      [-4, 1.3, -1],
+      [-4, 1.3, 1],
+      [-4, 1.3, 3],
+      //Diag L->R
+      [-4, 1.3, -4],
+      [4, 1.3, -4],
+      //Back->Front
+      [-3, 1.3, -4],
+      [-1, 1.3, -4],
+      [1, 1.3, -4],
+      [3, 1.3, -4],
+      // //L->R
+      [-4, 2.3, -3],
+      [-4, 2.3, -1],
+      [-4, 2.3, 1],
+      [-4, 2.3, 3],
+      //Diag L->R
+      [-4, 2.3, -4],
+      [4, 2.3, -4],
+      //Back->Front
+      [-3, 2.3, -4],
+      [-1, 2.3, -4],
+      [1, 2.3, -4],
+      [3, 2.3, -4],
+      // //L->R
+      [-4, 4, -3],
+      [-4, 4, -1],
+      [-4, 4, 1],
+      [-4, 4, 3],
+      //Diag L->R
+      [-4, 4, -4],
+      [4, 4, -4],
+      //Back->Front
+      [-3, 4, -4],
+      [-1, 4, -4],
+      [1, 4, -4],
+      [3, 4, -4],
 
-    ////Down->Up
-    [-3, -1, -3], [-1, -1, -3],  [1, -1, -3],  [3, -1, -3],
-    [-3, -1, -1], [-1, -1, -1],  [1, -1, -1],  [3, -1, -1],
-    [-3, -1, 1], [-1, -1, 1],  [1, -1, 1],  [3, -1, 1],
-    [-3, -1, 3], [-1, -1, 3],  [1, -1, 3],  [3, -1, 3],
+      // ////Down->Up
+      [-3, -1, -3],
+      [-1, -1, -3],
+      [1, -1, -3],
+      [3, -1, -3],
+      [-3, -1, -1],
+      [-1, -1, -1],
+      [1, -1, -1],
+      [3, -1, -1],
+      [-3, -1, 1],
+      [-1, -1, 1],
+      [1, -1, 1],
+      [3, -1, 1],
+      [-3, -1, 3],
+      [-1, -1, 3],
+      [1, -1, 3],
+      [3, -1, 3],
 
       // Down->Up Diag
-
-
-  ];
+      [-3, -2, -5],
+      [-1, -1, -3],
+      [1, -1, -3],
+      [3, -1, -3]
+    ];
     const rayDir = [
-         //L->R
-    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
-    //Diag L->R
-    [+3, 0, 3], [-3, 0, 3],
-     //Back->Front
-    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
-       //L->R
-    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
-        //Diag L->R
-        [+3, 0, 3], [-3, 0, 3],
-     //Back->Front
-    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
-       //L->R
-    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
-        //Diag L->R
-        [+3, 0, 3], [-3, 0, 3],
-     //Back->Front
-    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
-       //L->R
-    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
-        //Diag L->R
-        [+3, 0, 3], [-3, 0, 3],
-     //Back->Front
-    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
-    //Down->Up
-    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0],
-    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0],
-    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0],
-    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0]
+      //L->R
+      [+4, 0, 0],
+      [+4, 0, 0],
+      [+4, 0, 0],
+      [+4, 0, 0],
+      [+4, 0, 0],
+      // //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      // //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      //L->R
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      //L->R
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      // //L->R
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+
+      // //Down->Up
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
 
       //down->up Diag
-
-
-
-  ];
+      [0, 4, 5],
+      [0, 6, 6],
+      [0, 6, 6],
+      [0, 6, 6]
+    ];
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
     /**
@@ -464,14 +549,13 @@ const ThreeScene = ({ ball1, ball2 }) => {
     const clock = new THREE.Clock();
     let oldElapsedTime = 0;
 
-
-    let Zwall = 0
     // Rays()
-let stuff = 0
+    let stuff = 0;
     const tick = () => {
-if(stuff> 54){
-  stuff = 0
-}
+      if (stuff > 59) {
+        // setTimeout(()=> {}, '2000')
+        stuff = 0;
+      }
 
       const elapsedTime = clock.getElapsedTime();
       const deltaTime = elapsedTime - oldElapsedTime;
@@ -484,42 +568,49 @@ if(stuff> 54){
       // console.log(raycaster.ray.direction)
       // const rayOrigin2 = new THREE.Vector3(-4, 0, 4);
       // const rayDirection2 = new THREE.Vector3(9, 0, -0.01);
+      if (stuff) {
+        const rayOrigin2 = new THREE.Vector3(...rayOr[stuff]);
+        const rayDirection2 = new THREE.Vector3(...rayDir[stuff]);
+        rayDirection2.normalize();
+        raycaster2.set(rayOrigin2, rayDirection2);
+        // console.log(rayOrigin2, rayDirection2)
 
-      const rayOrigin2 = new THREE.Vector3(...rayOr[stuff]);
-      const rayDirection2 = new THREE.Vector3(...rayDir[stuff]);
-      raycaster2.set(rayOrigin2, rayDirection2);
-      // console.log(rayOrigin2, rayDirection2)
+        if (arrBall.length > 1) {
+          // console.log(raycaster2.ray.origin)
+          let arrow = new THREE.ArrowHelper(
+            raycaster2.ray.direction,
+            raycaster2.ray.origin,
+            8,
+            0xff0000
+          );
+          scene.add(arrow);
 
-      rayDirection2.normalize();
-      
-      if (arrBall.length>1) {
-        // if(Zwall ===2){
-        //   rayOrigin2.y = 2
-        // }
-        // rayOrigin2.z = Math.sin(elapsedTime*10)*5;
-        // rayOrigin2.y = Math.sin(elapsedTime*3)*2;
-        
-        //  console.log(Zwall)
-        let arrow = new THREE.ArrowHelper( raycaster2.ray.direction, raycaster2.ray.origin, 8, 0xff0000 );
-        scene.add( arrow );
-        // console.log(rayOrigin2.z)
-        // rayOrigin2.z = (rayOrigin2.z)-0.5;
-        let intersection2 = raycaster2.intersectObjects(arrBall);
-        // for (const obj of arrBall){
-        //   // obj.material.color = new THREE.Color('#000000')
-        // }
-        for (const intersect of intersection2) {
-          if (intersection2.length > 1){
-            intersect.object.material.color = new THREE.Color('#ffffff');
+          let intersection2 = raycaster2.intersectObjects(arrBall);
+          for (const obj of arrBall) {
+            // obj.material.color = new THREE.Color('#000000')
+            for (const intersect of intersection2) {
+              // if (intersection2.length > 1) {
+              //   intersect.object.material.color = new THREE.Color('#ffffff');
+              // }
+              if (intersection2.length === 4) {
+                // console.log(intersect.object.material);
+
+                for(let i = 0; i< intersection2.length; i++){
+                  // if(intersect.object.material.color[i] !== intersect.object.material.color[i+1]){
+                  //   console.log('Noooooooon')
+                  // } else   if(intersect.object.material.color[i] === intersect.object.material.color[i+1]){
+                  //   console.log('OUUUUUUUUUIn')
+                  // }
+
+                }
+                // intersect.object.material.color = new THREE.Color('#ff00ff');
+                // console.log(intersection2)
+              }
+              // console.log('interlenght', intersection2.length)
+            }
+          }
         }
-        if (intersection2.length > 3) {
-          // intersect.object.material.color = new THREE.Color('#ff00ff');
-          console.log('INTERSECTION4')
-        }
-        // console.log('interlenght', intersection2.length)
       }
-    }
-
       const intersection = raycaster.intersectObjects(cellsToTest);
       for (const object of cellsToTest) {
         object.material = cubeMat;
@@ -571,7 +662,6 @@ if(stuff> 54){
         // console.log('Sphere Created');
         arrBall.push(sphere);
         played += 1;
-        
       } else null;
       if (clicked > 1 && clicked !== 0) {
         clicked = 0;
@@ -611,4 +701,3 @@ if(stuff> 54){
   );
 };
 export default ThreeScene;
-
