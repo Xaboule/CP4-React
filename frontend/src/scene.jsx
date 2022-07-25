@@ -1,15 +1,12 @@
 import React, { Component, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import * as dat from 'lil-gui';
 import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger';
 import Grid from './grid.js';
 import Grid90 from './grid90';
 import { BackSide, DoubleSide } from 'three';
 import gsap from 'gsap';
-import Form from '../components/form.jsx';
-// import Rays from './rays';
 import './style.css';
 
 const ThreeScene = ({ ball1, ball2 }) => {
@@ -244,11 +241,11 @@ const ThreeScene = ({ ball1, ball2 }) => {
 
     const createSphere = (radius, position) => {
       // Three.js mesh
+      // played%2 !=0 mesh.name = player1 : mesh.name = player2
       const mesh = new THREE.Mesh(
         new THREE.SphereBufferGeometry(radius, 30, 30),
         new THREE.MeshStandardMaterial({
           color: played % 2 != 0 ? player1.color : player2.color,
-          metalness: 0.3,
           roughness: 0.4,
           //   wireframe: true,
         })
@@ -277,14 +274,6 @@ const ThreeScene = ({ ball1, ball2 }) => {
     };
 
     const debugObject = {};
-
-    //     const cyl = new THREE.Mesh(
-    //       new THREE.CylinderBufferGeometry(0.1,0.1,8),
-    // new THREE.MeshBasicMaterial('green')
-    //     )
-    //     cyl.position.x = 1
-    //     cyl.rotation.x = Math.PI*0.5
-    //     scene.add(cyl)
 
     /**
      * Sizes
@@ -455,11 +444,35 @@ const ThreeScene = ({ ball1, ball2 }) => {
       [1, -1, 3],
       [3, -1, 3],
 
-      // Down->Up Diag
+      //down->up Diag Back->front
       [-3, -2, -5],
-      [-1, -1, -3],
-      [1, -1, -3],
-      [3, -1, -3]
+      [-1, -2, -5],
+      [1, -2, -5],
+      [3, -2, -5],
+      //Up->Down Diag Back->front
+      [-3, 6, -5],
+      [-1, 6, -5],
+      [1, 6, -5],
+      [3, 6, -5],
+
+      //down->up Diag Left->Right
+      [-5, -2, -3],
+      [-5, -2, -1],
+      [-5, -2, 1],
+      [-5, -2, 3],
+
+      //Up-Down Diag Left->Right
+      [-5, 6, -3],
+      [-5, 6, -1],
+      [-5, 6, 1],
+      [-5, 6, 3],
+
+      ///// DIAG BY DIAG
+      [-4, 5, -4],
+      [-4, 5, -4],
+      [-4, 5, 4],
+      [-5, -2, -4],
+      [-5, -2, 4],
     ];
     const rayDir = [
       //L->R
@@ -534,16 +547,41 @@ const ThreeScene = ({ ball1, ball2 }) => {
       [0, 6, 0],
       [0, 6, 0],
 
-      //down->up Diag
+      //down->up Diag Back->front
       [0, 4, 5],
-      [0, 6, 6],
-      [0, 6, 6],
-      [0, 6, 6]
+      [0, 4, 5],
+      [0, 4, 5],
+      [0, 4, 5],
+
+      //Up->Down Diag Back->front
+      [0, -4, 5],
+      [0, -4, 5],
+      [0, -4, 5],
+      [0, -4, 5],
+
+      //down->up Diag Left-Right
+      [5, 4, 0],
+      [5, 4, 0],
+      [5, 4, 0],
+      [5, 4, 0],
+
+      //Up->Down Diag Left-Right
+      [5, -4, 0],
+      [5, -4, 0],
+      [5, -4, 0],
+      [5, -4, 0],
+
+      ///// DIAG BY DIAG
+      [3, -2, 3],
+      [3, -2, 3],
+      [3, -2, -3],
+      [5, 4, 4],
+      [5, 4, -4],
     ];
-    const axesHelper = new THREE.AxesHelper(5);
-    scene.add(axesHelper);
+    // const axesHelper = new THREE.AxesHelper(5);
+    // scene.add(axesHelper);
     /**
- * Animate
+     * Animate
  console.log(gridHelper);
  */
     const clock = new THREE.Clock();
@@ -552,7 +590,7 @@ const ThreeScene = ({ ball1, ball2 }) => {
     // Rays()
     let stuff = 0;
     const tick = () => {
-      if (stuff > 59) {
+      if (stuff > 75) {
         // setTimeout(()=> {}, '2000')
         stuff = 0;
       }
@@ -593,15 +631,18 @@ const ThreeScene = ({ ball1, ball2 }) => {
               //   intersect.object.material.color = new THREE.Color('#ffffff');
               // }
               if (intersection2.length === 4) {
-                // console.log(intersect.object.material);
-
-                for(let i = 0; i< intersection2.length; i++){
-                  // if(intersect.object.material.color[i] !== intersect.object.material.color[i+1]){
-                  //   console.log('Noooooooon')
-                  // } else   if(intersect.object.material.color[i] === intersect.object.material.color[i+1]){
-                  //   console.log('OUUUUUUUUUIn')
-                  // }
-
+                let flute = 0;
+                // console.log(intersection2);
+                for (let i = 0; i < intersection2.length; i++) {
+                  if (intersection2[i].object.name === 'p1') {
+                    flute += 2;
+                  } else if (intersection2[i].object.name === 'p2') {
+                    flute -= 2;
+                  }
+                }
+                // console.log(flute);
+                if (flute === 8 || flute === -8) {
+                  console.log('OUUUUUUUUUUUUI');
                 }
                 // intersect.object.material.color = new THREE.Color('#ff00ff');
                 // console.log(intersection2)
@@ -660,6 +701,8 @@ const ThreeScene = ({ ball1, ball2 }) => {
         );
         const sphere = createSphere(radius, pos);
         // console.log('Sphere Created');
+        played % 2 != 0 ? (sphere.name = 'p1') : (sphere.name = 'p2');
+        // console.log(sphere)
         arrBall.push(sphere);
         played += 1;
       } else null;
