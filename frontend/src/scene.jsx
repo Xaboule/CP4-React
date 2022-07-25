@@ -9,7 +9,7 @@ import { BackSide, DoubleSide } from 'three';
 import gsap from 'gsap';
 import './style.css';
 
-const ThreeScene = ({ ball1, ball2 }) => {
+const ThreeScene = ({ ball1, ball2, setWin1, setWin2}) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -573,13 +573,13 @@ const ThreeScene = ({ ball1, ball2 }) => {
 
       ///// DIAG BY DIAG
       [3, -2, 3],
-      [3, -2, 3],
-      [3, -2, -3],
+      [4, -3, 4],
+      [4, -3, -4],
       [5, 4, 4],
       [5, 4, -4],
     ];
-    // const axesHelper = new THREE.AxesHelper(5);
-    // scene.add(axesHelper);
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(axesHelper);
     /**
      * Animate
  console.log(gridHelper);
@@ -590,7 +590,7 @@ const ThreeScene = ({ ball1, ball2 }) => {
     // Rays()
     let stuff = 0;
     const tick = () => {
-      if (stuff > 75) {
+      if (stuff > 76) {
         // setTimeout(()=> {}, '2000')
         stuff = 0;
       }
@@ -615,13 +615,13 @@ const ThreeScene = ({ ball1, ball2 }) => {
 
         if (arrBall.length > 1) {
           // console.log(raycaster2.ray.origin)
-          let arrow = new THREE.ArrowHelper(
-            raycaster2.ray.direction,
-            raycaster2.ray.origin,
-            8,
-            0xff0000
-          );
-          scene.add(arrow);
+          // let arrow = new THREE.ArrowHelper(
+          //   raycaster2.ray.direction,
+          //   raycaster2.ray.origin,
+          //   8,
+          //   0xff0000
+          // );
+          // scene.add(arrow);
 
           let intersection2 = raycaster2.intersectObjects(arrBall);
           for (const obj of arrBall) {
@@ -643,6 +643,12 @@ const ThreeScene = ({ ball1, ball2 }) => {
                 // console.log(flute);
                 if (flute === 8 || flute === -8) {
                   console.log('OUUUUUUUUUUUUI');
+                  clicked = 2
+                  if(flute ===8){
+                    setWin1 = true
+                  } else if(flute === -8){
+                    setWin2 = true
+                  }
                 }
                 // intersect.object.material.color = new THREE.Color('#ff00ff');
                 // console.log(intersection2)
@@ -686,12 +692,6 @@ const ThreeScene = ({ ball1, ball2 }) => {
       // document.addEventListener('touchend', onMouseUp);
 
       if (intersection[0] !== undefined && clicked === 1) {
-        // console.log(clicked)
-        // for(let i = 0; i< rayOr.length; i++){
-        //   raycaster.set(rayOr[i], rayDir[i])
-        //   // console.log(rayOr[i], rayDir[i])
-        //   setTimeout(()=>{}, '100')
-        // }
         clicked = 0;
         removeEventListener('mousedown', onMouseDown);
         let pos = new THREE.Vector3(

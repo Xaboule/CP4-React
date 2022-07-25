@@ -13,6 +13,8 @@ function App() {
   const [play, setPlay] = useState(false);
   const [ball1, setBall1] = useState('#ff0000');
   const [ball2, setBall2] = useState('#0000ff');
+  const [win1, setWin1] = useState(false);
+  const [win2, setWin2] = useState(false)
 
   const playerStats = {};
 
@@ -38,11 +40,24 @@ function App() {
           />
           </>
       ) : null}
+
+{win1 === true ? (
+      <prompt
+      >
+      {name1} Wins
+      </prompt> ):  win2 ===true ?(
+      <prompt
+      >
+      {name2} Wins
+      </prompt> ) : null }
       {play ? (
         <>
       <ThreeScene 
       ball1={ball1}
-      ball2={ball2}/>
+      ball2={ball2}
+      setWin1={setWin1}
+      setWin2={setWin2}
+      />
     
       <div id='can-btn'>
         <div id='btn'>
