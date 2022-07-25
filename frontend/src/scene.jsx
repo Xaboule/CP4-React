@@ -7,18 +7,18 @@ import CannonDebugger from 'cannon-es-debugger';
 import Grid from './grid.js';
 import Grid90 from './grid90';
 import { BackSide, DoubleSide } from 'three';
+import gsap from 'gsap';
 import Form from '../components/form.jsx';
 // import Rays from './rays';
 import './style.css';
 
-const ThreeScene = ({ball1, ball2}) => {
+const ThreeScene = ({ ball1, ball2 }) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
     /**
      * Base
      */
- 
 
     // Canvas
     const canvas = document.getElementById('myCanvas');
@@ -45,7 +45,6 @@ const ThreeScene = ({ball1, ball2}) => {
     pointLight.castShadow = true;
     scene.add(pointLight);
 
- 
     scene.fog = new THREE.Fog(0xffffff, 5, 50);
 
     const caseBox = new THREE.Mesh(
@@ -279,13 +278,13 @@ const ThreeScene = ({ball1, ball2}) => {
 
     const debugObject = {};
 
-//     const cyl = new THREE.Mesh(
-//       new THREE.CylinderBufferGeometry(0.1,0.1,8),
-// new THREE.MeshBasicMaterial('green')
-//     )
-//     cyl.position.x = 1
-//     cyl.rotation.x = Math.PI*0.5
-//     scene.add(cyl)
+    //     const cyl = new THREE.Mesh(
+    //       new THREE.CylinderBufferGeometry(0.1,0.1,8),
+    // new THREE.MeshBasicMaterial('green')
+    //     )
+    //     cyl.position.x = 1
+    //     cyl.rotation.x = Math.PI*0.5
+    //     scene.add(cyl)
 
     /**
      * Sizes
@@ -371,34 +370,24 @@ const ThreeScene = ({ball1, ball2}) => {
     function onMouseUp(event) {
       // console.log('mouseup');
       clicked = 0;
-
+      // console.log(arrBall);
     }
     function onMouseMove(event) {
       // event.preventDefault();
-      
+
       mouse.x = (event.clientX / sizes.width) * 2 - 1;
       mouse.y = -(event.clientY / sizes.height) * 2 + 1;
-      let camus = new THREE.Vector3(0,camera.position.y, camera.position.z)
-
-      raycaster.camera = camera;
-      raycaster.set(camus, mouse);
-      mouse.normalize()
     }
 
     /////RAYCASTER MOVING BACK & FORTH ON Z-AXIS
     const raycaster2 = new THREE.Raycaster();
-    const rayOrigin2 = new THREE.Vector3(-3, -0.3, 1);
-    const rayDirection2 = new THREE.Vector3(3, -0.3, 1);
-
-    rayDirection2.normalize();
 
     // raycaster.params = { line: { threshold: 1 } };
-const rayOr = [
-  (-3,0,-3),  (-3,0,-1),  (-3,0,1), (-3,0,3)
-]
-const rayDir = [
-  (+3,0,-3),  (+3,0,-1),  (+3,0,1),  (+3,0,3)
-]
+    // const rayOr = [(-3, 0, -3), (-3, 0, -1), (-3, 0, 1), (-3, 0, 3)];
+    // const rayDir = [(+3, 0, -3), (+3, 0, -1), (+3, 0, 1), (+3, 0, 3)];
+
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(axesHelper);
     /**
  * Animate
  console.log(gridHelper);
@@ -413,18 +402,39 @@ const rayDir = [
       const deltaTime = elapsedTime - oldElapsedTime;
       oldElapsedTime = elapsedTime;
 
-
-      // pointLight.position.x = Math.sin(elapsedTime * 0.3) * 2
-      // pointLight.position.z = Math.sin(elapsedTime * 0.3) * 3.4
-      // pointLight2.position.x = -Math.sin(elapsedTime * 0.3) * 2
-      // pointLight2.position.z = Math.sin(elapsedTime * 0.3) * 3.4
       controls.update();
-   
-        // console.log(raycaster)
-        // console.log(raycaster.ray.direction)
 
- 
-      let intersection = raycaster.intersectObjects(cellsToTest);
+      raycaster.setFromCamera(mouse, camera);
+      // console.log(raycaster)
+      // console.log(raycaster.ray.direction)
+      const rayOrigin2 = new THREE.Vector3(-4, -0.3, 4);
+      const rayDirection2 = new THREE.Vector3(4, -0.3, 0);
+      
+      rayDirection2.normalize();
+      
+      if (arrBall>7) {
+        rayOrigin2.z = Math.sin(elapsedTime*0.5)*4;
+      }
+      if(arrBall> 17){
+
+      }
+        let intersection2 = raycaster2.intersectObjects(arrBall);
+        raycaster2.set(rayOrigin2, rayDirection2);
+        for (const obj of arrBall){
+          obj.material.color = obj.material.color
+        }
+        for (const intersect of intersection2) {
+          if (intersection2.length > 1){
+            intersect.object.material.color = new THREE.Color('#ffffff');
+        }
+        if (intersection2.length > 3) {
+          intersect.object.material.color = new THREE.Color('#ff00ff');
+        }
+        // console.log('interlenght', intersection2.length)
+      
+    }
+
+      const intersection = raycaster.intersectObjects(cellsToTest);
       for (const object of cellsToTest) {
         object.material = cubeMat;
         lightTile.material = planeMat;
@@ -458,12 +468,12 @@ const rayDir = [
       // document.addEventListener('touchend', onMouseUp);
 
       if (intersection[0] !== undefined && clicked === 1) {
-        console.log(clicked)
-          for(let i = 0; i< rayOr.length; i++){
-            raycaster.set(rayOr[i], rayDir[i])
-            console.log(rayOr[i], rayDir[i])
-            setTimeout(()=>{}, '100')
-          }
+        // console.log(clicked)
+        // for(let i = 0; i< rayOr.length; i++){
+        //   raycaster.set(rayOr[i], rayDir[i])
+        //   // console.log(rayOr[i], rayDir[i])
+        //   setTimeout(()=>{}, '100')
+        // }
         clicked = 0;
         removeEventListener('mousedown', onMouseDown);
         let pos = new THREE.Vector3(
@@ -476,11 +486,11 @@ const rayDir = [
         arrBall.push(sphere);
         played += 1;
       } else null;
-        if (clicked > 1 && clicked !== 0) {
-          clicked = 0;
-          setTimeout(() => {}, '50');
-        }
-        // raycaster2.set(rayOrigin2, rayDirection2);
+      if (clicked > 1 && clicked !== 0) {
+        clicked = 0;
+        setTimeout(() => {}, '50');
+      }
+      // raycaster2.set(rayOrigin2, rayDirection2);
 
       for (const object of objectsToUpdate) {
         object.mesh.position.copy(object.body.position);
@@ -489,7 +499,7 @@ const rayDir = [
 
       world.step(1 / 60, deltaTime, 3);
       // Update controls
- 
+
       // cannonDebugger.update();
       // Render
       renderer.render(scene, camera);
@@ -499,16 +509,17 @@ const rayDir = [
     };
 
     tick();
-    return () => mountRef.current.removeChild(renderer.domElement);
+    // return () => mountRef.current.removeChild(renderer.domElement);
     // }
   }, []);
 
   return (
     <>
       <div>
-        <canvas id='myCanvas'/>
+        <canvas id='myCanvas' />
       </div>
     </>
   );
 };
 export default ThreeScene;
+
