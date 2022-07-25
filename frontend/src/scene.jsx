@@ -382,10 +382,79 @@ const ThreeScene = ({ ball1, ball2 }) => {
     /////RAYCASTER MOVING BACK & FORTH ON Z-AXIS
     const raycaster2 = new THREE.Raycaster();
 
-    // raycaster.params = { line: { threshold: 1 } };
-    // const rayOr = [(-3, 0, -3), (-3, 0, -1), (-3, 0, 1), (-3, 0, 3)];
-    // const rayDir = [(+3, 0, -3), (+3, 0, -1), (+3, 0, 1), (+3, 0, 3)];
 
+    const rayOr = [
+      //L->R
+    [-3, -0.3, -3], [-3, -0.3, -1], [-3, -0.3, 1], [-3, -0.3, 3],
+    //Diag L->R 
+    [-3, -0.3, -3], [3, -0.3, -3],
+    //Back->Front
+    [-3, -0.3, -3], [-1, -0.3, -3], [1, -0.3, -3], [3, -0.3, -3],
+       //L->R
+    [-3, 1.3, -3], [-3, 1.3, -1], [-3, 1.3, 1], [-3, 1.3, 3],
+    //Diag L->R
+    [-3, 1.3, -3], [3, 1.3, -3],
+     //Back->Front
+    [-3, 1.3, -3], [-1, 1.3, -3], [1, 1.3, -3], [3, 1.3, -3],
+       //L->R
+    [-3, 2.3, -3], [-3, 2.3, -1], [-3, 2.3, 1], [-3, 2.3, 3],
+        //Diag L->R
+        [-3, 2.3, -3], [3, 2.3, -3],
+     //Back->Front
+    [-3, 2.3, -3], [-1, 2.3, -3], [1, 2.3, -3], [3, 2.3, -3],
+       //L->R
+    [-3, 4, -3], [-3, 4, -1], [-3, 4, 1], [-3, 4, 3],
+        //Diag L->R
+        [-3, 4, -3], [3, 4, -3],
+     //Back->Front
+    [-3, 4, -3], [-1, 4, -3], [1, 4, -3], [3, 4, -3],
+
+    ////Down->Up
+    [-3, -1, -3], [-1, -1, -3],  [1, -1, -3],  [3, -1, -3],
+    [-3, -1, -1], [-1, -1, -1],  [1, -1, -1],  [3, -1, -1],
+    [-3, -1, 1], [-1, -1, 1],  [1, -1, 1],  [3, -1, 1],
+    [-3, -1, 3], [-1, -1, 3],  [1, -1, 3],  [3, -1, 3],
+
+      // Down->Up Diag
+
+
+  ];
+    const rayDir = [
+         //L->R
+    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
+    //Diag L->R
+    [+3, 0, 3], [-3, 0, 3],
+     //Back->Front
+    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
+       //L->R
+    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
+        //Diag L->R
+        [+3, 0, 3], [-3, 0, 3],
+     //Back->Front
+    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
+       //L->R
+    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
+        //Diag L->R
+        [+3, 0, 3], [-3, 0, 3],
+     //Back->Front
+    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
+       //L->R
+    [+3, 0, 0], [+3, 0, 0], [+3, 0, 0], [+3, 0, 0],
+        //Diag L->R
+        [+3, 0, 3], [-3, 0, 3],
+     //Back->Front
+    [0, 0, 3], [0, 0, 3], [0, 0, 3], [0, 0, 3],
+    //Down->Up
+    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0],
+    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0],
+    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0],
+    [0, 6,0], [0, 6,0], [0, 6,0], [0, 6,0]
+
+      //down->up Diag
+
+
+
+  ];
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
     /**
@@ -395,9 +464,15 @@ const ThreeScene = ({ ball1, ball2 }) => {
     const clock = new THREE.Clock();
     let oldElapsedTime = 0;
 
-    // Rays()
 
+    let Zwall = 0
+    // Rays()
+let stuff = 0
     const tick = () => {
+if(stuff> 54){
+  stuff = 0
+}
+
       const elapsedTime = clock.getElapsedTime();
       const deltaTime = elapsedTime - oldElapsedTime;
       oldElapsedTime = elapsedTime;
@@ -407,31 +482,42 @@ const ThreeScene = ({ ball1, ball2 }) => {
       raycaster.setFromCamera(mouse, camera);
       // console.log(raycaster)
       // console.log(raycaster.ray.direction)
-      const rayOrigin2 = new THREE.Vector3(-4, -0.3, 4);
-      const rayDirection2 = new THREE.Vector3(4, -0.3, 0);
-      
+      // const rayOrigin2 = new THREE.Vector3(-4, 0, 4);
+      // const rayDirection2 = new THREE.Vector3(9, 0, -0.01);
+
+      const rayOrigin2 = new THREE.Vector3(...rayOr[stuff]);
+      const rayDirection2 = new THREE.Vector3(...rayDir[stuff]);
+      raycaster2.set(rayOrigin2, rayDirection2);
+      // console.log(rayOrigin2, rayDirection2)
+
       rayDirection2.normalize();
       
-      if (arrBall>7) {
-        rayOrigin2.z = Math.sin(elapsedTime*0.5)*4;
-      }
-      if(arrBall> 17){
-
-      }
+      if (arrBall.length>1) {
+        // if(Zwall ===2){
+        //   rayOrigin2.y = 2
+        // }
+        // rayOrigin2.z = Math.sin(elapsedTime*10)*5;
+        // rayOrigin2.y = Math.sin(elapsedTime*3)*2;
+        
+        //  console.log(Zwall)
+        let arrow = new THREE.ArrowHelper( raycaster2.ray.direction, raycaster2.ray.origin, 8, 0xff0000 );
+        scene.add( arrow );
+        // console.log(rayOrigin2.z)
+        // rayOrigin2.z = (rayOrigin2.z)-0.5;
         let intersection2 = raycaster2.intersectObjects(arrBall);
-        raycaster2.set(rayOrigin2, rayDirection2);
-        for (const obj of arrBall){
-          obj.material.color = obj.material.color
-        }
+        // for (const obj of arrBall){
+        //   // obj.material.color = new THREE.Color('#000000')
+        // }
         for (const intersect of intersection2) {
           if (intersection2.length > 1){
             intersect.object.material.color = new THREE.Color('#ffffff');
         }
         if (intersection2.length > 3) {
-          intersect.object.material.color = new THREE.Color('#ff00ff');
+          // intersect.object.material.color = new THREE.Color('#ff00ff');
+          console.log('INTERSECTION4')
         }
         // console.log('interlenght', intersection2.length)
-      
+      }
     }
 
       const intersection = raycaster.intersectObjects(cellsToTest);
@@ -485,6 +571,7 @@ const ThreeScene = ({ ball1, ball2 }) => {
         // console.log('Sphere Created');
         arrBall.push(sphere);
         played += 1;
+        
       } else null;
       if (clicked > 1 && clicked !== 0) {
         clicked = 0;
@@ -496,6 +583,8 @@ const ThreeScene = ({ ball1, ball2 }) => {
         object.mesh.position.copy(object.body.position);
         object.mesh.quaternion.copy(object.body.quaternion);
       }
+
+      stuff++;
 
       world.step(1 / 60, deltaTime, 3);
       // Update controls
