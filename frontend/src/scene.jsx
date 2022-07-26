@@ -9,7 +9,8 @@ import { BackSide, DoubleSide } from 'three';
 import gsap from 'gsap';
 import './style.css';
 
-const ThreeScene = ({ ball1, ball2, setWin1, setWin2}) => {
+const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
+
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -594,6 +595,7 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2}) => {
         // setTimeout(()=> {}, '2000')
         stuff = 0;
       }
+      
 
       const elapsedTime = clock.getElapsedTime();
       const deltaTime = elapsedTime - oldElapsedTime;
@@ -640,16 +642,18 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2}) => {
                     flute -= 2;
                   }
                 }
-                // console.log(flute);
-                if (flute === 8 || flute === -8) {
-                  console.log('OUUUUUUUUUUUUI');
-                  clicked = 2
-                  if(flute ===8){
-                    setWin1 = true
-                  } else if(flute === -8){
-                    setWin2 = true
-                  }
+                // if (flute === 8 || flute === -8) {
+                //   console.log('OUUUUUUUUUUUUI');
+                // clicked = 2
+
+                if (flute === 8) {
+                  console.log("ouimadamebonjour")
+                  setWin1(true);
+                } else if (flute === -8) {
+                  console.log("ouimadamebonjour")
+                  setWin2(true);
                 }
+                // }
                 // intersect.object.material.color = new THREE.Color('#ff00ff');
                 // console.log(intersection2)
               }

@@ -1,0 +1,18 @@
+
+#popup{
+  display: flex;
+  justify-content: space-around;
+  background-color: aqua;
+  height: 20vh;
+  width: 70vw;
+  z-index: 100;
+  position: absolute;
+  margin: 10rem;
+  color: black;
+}
+
+#winOne, #winTwo{
+  color: black;
+  font-size: 3rem;
+}
+

@@ -3,6 +3,8 @@ import reactLogo from './assets/react.svg';
 import ThreeScene from './scene';
 import Form from '../components/form';
 import './App.css';
+import Popup from 'reactjs-popup';
+import PopupWin from '../components/popup';
 
 function App() {
   const [player1, setPlayer1] = useState(0);
@@ -14,7 +16,7 @@ function App() {
   const [ball1, setBall1] = useState('#ff0000');
   const [ball2, setBall2] = useState('#0000ff');
   const [win1, setWin1] = useState(false);
-  const [win2, setWin2] = useState(false)
+  const [win2, setWin2] = useState(false);
 
   const playerStats = {};
 
@@ -22,6 +24,7 @@ function App() {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/playerUpdate`);
   };
 
+  console.log(win1)
   return (
     <div className='App'>
       {!play ? (
@@ -41,15 +44,8 @@ function App() {
           </>
       ) : null}
 
-{win1 === true ? (
-      <prompt
-      >
-      {name1} Wins
-      </prompt> ):  win2 ===true ?(
-      <prompt
-      >
-      {name2} Wins
-      </prompt> ) : null }
+       {/* {win1 === true || win2 === true ? (<PopupWin/>) : null} */}
+ {/* {win1 === true ? (<Popup className='popupwin'><div>{name1} wins </div></Popup>) : win2 === true ? (<Popup className='popupwin'><div> {name2} wins</div></Popup>): null} */}
       {play ? (
         <>
       <ThreeScene 
