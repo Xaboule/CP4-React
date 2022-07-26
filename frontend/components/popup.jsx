@@ -12,16 +12,12 @@ function PopupWin({
 
   return (
     <div id="popup">
-{/*     
-    {win1 === true ? ( */}
-  <Popup className='popupwin' open={win1 ===true ? open : null}  onClick={!open}>
-          <div id='winOne'><p >{name1} wins</p> </div>
-        </Popup>
-      {/* ) : null} */}
+    
+    {win1 === true ? (
+          <div id='winOne'>{name1} wins</div>
+      ) : null}
       {win2 === true ? (
-        <Popup className='popupWin'>
-          <div id='winTwo'><p>{name2} wins</p></div>
-        </Popup>
+          <div id='winTwo'>{name2} wins</div>
       ) : null}
       </div>
   );

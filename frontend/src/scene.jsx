@@ -5,12 +5,16 @@ import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger';
 import Grid from './grid.js';
 import Grid90 from './grid90';
-import { BackSide, DoubleSide } from 'three';
+import { BackSide, DoubleSide, SphereGeometry } from 'three';
 import gsap from 'gsap';
 import './style.css';
+import Stats from 'stats.js';
+
+const stats = new Stats();
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild(stats.dom);
 
 const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
-
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -207,6 +211,7 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
 
     const world = new CANNON.World();
     world.gravity.set(0, -14.82, 0);
+    world.allowSleep = true;
 
     // gui.add(world.gravity)
     const cannonDebugger = new CannonDebugger(scene, world, {
@@ -237,42 +242,6 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
     floorBody.mass = 0;
     floorBody.addShape(floorShape);
     world.addBody(floorBody);
-
-    const radius = 0.7;
-
-    const createSphere = (radius, position) => {
-      // Three.js mesh
-      // played%2 !=0 mesh.name = player1 : mesh.name = player2
-      const mesh = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(radius, 30, 30),
-        new THREE.MeshStandardMaterial({
-          color: played % 2 != 0 ? player1.color : player2.color,
-          roughness: 0.4,
-          //   wireframe: true,
-        })
-      );
-      mesh.castShadow = true;
-      mesh.position.copy(position);
-      scene.add(mesh);
-
-      // Cannon.js body
-      const shape = new CANNON.Sphere(radius);
-
-      const body = new CANNON.Body({
-        mass: 3,
-        position: position,
-        shape: shape,
-        material: defaultMaterial,
-      });
-      body.addShape(shape);
-      // body.position.copy(mesh.position)
-
-      mesh.position.copy(body.position);
-      world.addBody(body);
-      objectsToUpdate.push({ mesh, body });
-
-      return mesh;
-    };
 
     const debugObject = {};
 
@@ -348,7 +317,7 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
     Grid90(world, [2, 2, 0]);
     Grid90(world, [4, 2, 0]);
 
-    const arrBall = [];
+    let arrBall = [];
 
     let clicked = 0;
 
@@ -581,27 +550,98 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
     ];
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
+
+    const radius = 0.7;
+
+    const createSphere = (radius, position) => {
+      // Three.js mesh
+      // played%2 !=0 mesh.name = player1 : mesh.name = player2
+      const mesh = new THREE.Mesh(
+        new THREE.SphereBufferGeometry(radius, 30, 30),
+        new THREE.MeshStandardMaterial({
+          color: played % 2 != 0 ? player1.color : player2.color,
+          roughness: 0.4,
+          //   wireframe: true,
+        })
+      );
+      mesh.castShadow = true;
+      mesh.position.copy(position);
+      scene.add(mesh);
+
+      // Cannon.js body
+      const shape = new CANNON.Sphere(radius);
+
+      const body = new CANNON.Body({
+        mass: 3,
+        position: position,
+        shape: shape,
+        material: defaultMaterial,
+      });
+      body.addShape(shape);
+      // body.position.copy(mesh.position)
+
+      mesh.position.copy(body.position);
+      world.addBody(body);
+      objectsToUpdate.push({ mesh, body });
+
+      return mesh;
+    };
     /**
      * Animate
  console.log(gridHelper);
  */
+    function clearScene() {
+      var to_remove = [];
+      let removebody = [];
+      scene.traverse(function (child) {
+        // console.log(child)
+        if (
+          child instanceof THREE.Mesh &&
+          !child.userData.keepMe === true &&
+          child.geometry.type === 'SphereGeometry'
+        ) {
+          to_remove.push(child);
+        }
+      });
+      // world.traverse ( function( child ) {
+        // console.log(world.bodies[12].shapes)
+        for (let w = 0; w < world.bodies.length; w++) {
+          for(let wi=0; wi < world.bodies[w].shapes.length; wi++){
+            if (world.bodies[w].shapes[wi].radius === 0.7) {
+             removebody.push(world.bodies[w])
+            }
+          }
+          for (let i = 0; i< removebody.length; i++){
+            world.removeBody(removebody[i]);
+          }
+          console.log(world);
+        }
+        
+        for (var i = 0; i < to_remove.length; i++) {
+          scene.remove(to_remove[i]);
+        }
+    
+    }
+
     const clock = new THREE.Clock();
     let oldElapsedTime = 0;
 
     // Rays()
     let stuff = 0;
     const tick = () => {
+      stats.begin();
       if (stuff > 76) {
         // setTimeout(()=> {}, '2000')
         stuff = 0;
       }
-      
 
       const elapsedTime = clock.getElapsedTime();
       const deltaTime = elapsedTime - oldElapsedTime;
       oldElapsedTime = elapsedTime;
 
       controls.update();
+
+
 
       raycaster.setFromCamera(mouse, camera);
       // console.log(raycaster)
@@ -642,20 +682,29 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
                     flute -= 2;
                   }
                 }
-                // if (flute === 8 || flute === -8) {
-                //   console.log('OUUUUUUUUUUUUI');
-                // clicked = 2
 
                 if (flute === 8) {
-                  console.log("ouimadamebonjour")
+                  // console.log('ouimadamebonjour');
                   setWin1(true);
+                  clicked = 2;
+
                 } else if (flute === -8) {
-                  console.log("ouimadamebonjour")
+                  // console.log('ouimadamebonjour');
                   setWin2(true);
+                  clicked = 2;
+
                 }
                 // }
                 // intersect.object.material.color = new THREE.Color('#ff00ff');
                 // console.log(intersection2)
+                if(clicked === 2){
+                  clearScene();
+                  // played = 0
+                  setWin1(false)
+                  setWin2(false)
+                  flute = 0;
+                  arrBall =[]
+                }
               }
               // console.log('interlenght', intersection2.length)
             }
@@ -721,15 +770,17 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
         object.mesh.quaternion.copy(object.body.quaternion);
       }
 
+
       stuff++;
 
       world.step(1 / 60, deltaTime, 3);
       // Update controls
 
-      // cannonDebugger.update();
+      cannonDebugger.update();
       // Render
       renderer.render(scene, camera);
 
+      stats.end();
       // Call tick again on the next frame
       window.requestAnimationFrame(tick);
     };

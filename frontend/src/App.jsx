@@ -6,6 +6,9 @@ import './App.css';
 import Popup from 'reactjs-popup';
 import PopupWin from '../components/popup';
 
+
+
+
 function App() {
   const [player1, setPlayer1] = useState(0);
   const [player2, setPlayer2] = useState(0);
@@ -44,8 +47,14 @@ function App() {
           </>
       ) : null}
 
-       {/* {win1 === true || win2 === true ? (<PopupWin/>) : null} */}
+       {/* {win1 === true || win2 === true ? (<PopupWin
+       win1={win1}
+       win2={win2}
+       name1={name1}
+       name2={name2}
+       />) : null} */}
  {/* {win1 === true ? (<Popup className='popupwin'><div>{name1} wins </div></Popup>) : win2 === true ? (<Popup className='popupwin'><div> {name2} wins</div></Popup>): null} */}
+      {/* {win1 === false && win2 === false &&  */}
       {play ? (
         <>
       <ThreeScene 
@@ -75,5 +84,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
