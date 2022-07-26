@@ -1,0 +1,20 @@
+
+#popup{
+  display: flex;
+  background-color: rgba(0, 255, 255, 0.909);
+  justify-content: space-around;
+  align-items: center;
+  height: 40vh;
+  width: 70vw;
+  z-index: 100;
+  position: absolute;
+  margin: 10rem;
+  color: black;
+}
+
+#winOne, #winTwo{
+ display: flex;
+  color: black;
+  font-size: 3rem;
+}
+

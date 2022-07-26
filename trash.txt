@@ -1,0 +1,67 @@
+{
+    "ray": {
+        "origin": {
+            "x": 0.7366548042704626,
+            "y": -0.8385321100917431
+        },
+        "direction": {
+            "x": 0,
+            "y": 3.130495168499707,
+            "z": 6.260990336999412
+        }
+    },
+    "near": 0,
+    "far": null,
+    "camera": {
+        "metadata": {
+            "version": 4.5,
+            "type": "Object",
+            "generator": "Object3D.toJSON"
+        },
+        "object": {
+            "uuid": "b652bea6-1e25-4507-a6dd-8652434524f7",
+            "type": "PerspectiveCamera",
+            "layers": 1,
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0.8944271909999157,
+                -0.44721359549995804,
+                0,
+                0,
+                0.44721359549995804,
+                0.8944271909999157,
+                0,
+                0,
+                3.130495168499707,
+                6.260990336999412,
+                1
+            ],
+            "fov": 75,
+            "zoom": 1,
+            "near": 0.1,
+            "far": 100,
+            "focus": 10,
+            "aspect": 1.546788990825688,
+            "filmGauge": 35,
+            "filmOffset": 0
+        }
+    },
+    "layers": {
+        "mask": 1
+    },
+    "params": {
+        "Mesh": {},
+        "Line": {
+            "threshold": 1
+        },
+        "LOD": {},
+        "Points": {
+            "threshold": 1
+        },
+        "Sprite": {}
+    }
+}

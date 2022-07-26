@@ -1,24 +1,26 @@
 import React, { Component, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import * as dat from 'lil-gui';
 import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger';
 import Grid from './grid.js';
 import Grid90 from './grid90';
-import { BackSide, DoubleSide } from 'three';
-// import Rays from './rays';
+import { BackSide, DoubleSide, SphereGeometry } from 'three';
+import gsap from 'gsap';
 import './style.css';
+import Stats from 'stats.js';
 
-const ThreeScene = () => {
+const stats = new Stats();
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild(stats.dom);
+
+const ThreeScene = ({ ball1, ball2, setWin1, setWin2 }) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
     /**
      * Base
      */
-    // Debug
-    // const gui = new dat.GUI();
 
     // Canvas
     const canvas = document.getElementById('myCanvas');
@@ -30,15 +32,19 @@ const ThreeScene = () => {
     const raycaster = new THREE.Raycaster();
     //lights
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1);
-    mainLight.position.y = 10;
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    mainLight.position.y = 8;
     mainLight.castShadow = true;
+    mainLight.shadow.radius = 1;
     // const helper = new THREE.DirectionalLightHelper(mainLight, 5)
     scene.add(mainLight);
 
-    const pointLight = new THREE.PointLight(0xf000f0, 1);
-    pointLight.position.y = 6;
-    pointLight.position.x = 5;
+    const pointLight = new THREE.SpotLight(0xf000f0, 1);
+    pointLight.position.y = 5;
+    pointLight.position.x = 0;
+    pointLight.position.z = 0;
+    pointLight.penumbra = 0.2;
+    pointLight.castShadow = true;
     scene.add(pointLight);
 
     scene.fog = new THREE.Fog(0xffffff, 5, 50);
@@ -49,7 +55,6 @@ const ThreeScene = () => {
     );
 
     scene.add(caseBox);
-
     ///////// Plane
     const planeMat = new THREE.MeshStandardMaterial({
       transparent: true,
@@ -60,7 +65,7 @@ const ThreeScene = () => {
       new THREE.MeshStandardMaterial({ color: 'pink' })
     );
     plane1.rotation.x = -Math.PI * 0.5;
-    plane1.position.y = -1.0001;
+    plane1.position.y = -1.0002;
     scene.add(plane1);
     const plane2 = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(8, 8),
@@ -196,16 +201,17 @@ const ThreeScene = () => {
     let played = 0;
 
     const player1 = {
-      color: 'blue',
+      color: ball1,
     };
     const player2 = {
-      color: 'red',
+      color: ball2,
     };
 
     const objectsToUpdate = [];
 
     const world = new CANNON.World();
     world.gravity.set(0, -14.82, 0);
+    world.allowSleep = true;
 
     // gui.add(world.gravity)
     const cannonDebugger = new CannonDebugger(scene, world, {
@@ -237,42 +243,6 @@ const ThreeScene = () => {
     floorBody.addShape(floorShape);
     world.addBody(floorBody);
 
-    const radius = 0.7;
-
-    const createSphere = (radius, position) => {
-      // Three.js mesh
-      const mesh = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(radius, 30, 30),
-        new THREE.MeshStandardMaterial({
-          color: played % 2 != 0 ? player1.color : player2.color,
-          metalness: 0.3,
-          roughness: 0.4,
-          //   wireframe: true,
-        })
-      );
-      mesh.castShadow = true;
-      mesh.position.copy(position);
-      scene.add(mesh);
-
-      // Cannon.js body
-      const shape = new CANNON.Sphere(radius);
-
-      const body = new CANNON.Body({
-        mass: 3,
-        position: position,
-        shape: shape,
-        material: defaultMaterial,
-      });
-      body.addShape(shape);
-      // body.position.copy(mesh.position)
-
-      mesh.position.copy(body.position);
-      world.addBody(body);
-      objectsToUpdate.push({ mesh, body });
-
-      return mesh;
-    };
-
     const debugObject = {};
 
     /**
@@ -280,13 +250,13 @@ const ThreeScene = () => {
      */
     const sizes = {
       width: window.innerWidth,
-      height: window.innerHeight -80,
+      height: window.innerHeight - 80,
     };
 
     window.addEventListener('resize', () => {
       // Update sizes
       sizes.width = window.innerWidth;
-      sizes.height = window.innerHeight;
+      sizes.height = window.innerHeight - 80;
 
       // Update camera
       camera.aspect = sizes.width / sizes.height;
@@ -328,14 +298,13 @@ const ThreeScene = () => {
     /**
      * Renderer
      */
+    // renderer.physicallyCorrectLights = true;
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     // mountRef.current.appendChild(renderer.domElement);
 
     renderer.shadowMap.enabled = true;
     document.addEventListener('mousemove', onMouseMove);
-    // document.addEventListener('mousedown', onMouseDown)
-    // document.addEventListener('mouseup', onMouseUp)
 
     Grid(world, [0, 2, 0]);
     Grid(world, [0, 2, 2]);
@@ -348,19 +317,19 @@ const ThreeScene = () => {
     Grid90(world, [2, 2, 0]);
     Grid90(world, [4, 2, 0]);
 
-    const arrBall = [];
+    let arrBall = [];
 
     let clicked = 0;
 
     function onMouseDown(event) {
-      console.log('mousedown');
+      // console.log('mousedown');
       event.preventDefault();
       clicked = 1;
     }
     function onMouseUp(event) {
-      console.log('mouseup');
+      // console.log('mouseup');
       clicked = 0;
-      // raycaster.setFromCamera(mouse, camera);
+      // console.log(arrBall);
     }
     function onMouseMove(event) {
       // event.preventDefault();
@@ -371,30 +340,377 @@ const ThreeScene = () => {
 
     /////RAYCASTER MOVING BACK & FORTH ON Z-AXIS
     const raycaster2 = new THREE.Raycaster();
-    const rayOrigin2 = new THREE.Vector3(-3, -0.3, 1);
-    const rayDirection2 = new THREE.Vector3(3, -0.3, 1);
-    rayDirection2.normalize();
 
-    raycaster.params = { line: { threshold: 1 } };
+    const rayOr = [
+      //L->R
+      [-4, -0.3, -3],
+      [-4, -0.3, -3],
+      [-4, -0.3, -1],
+      [-4, -0.3, 1],
+      [-4, -0.3, 3],
+      // //Diag L->R
+      [-4, -0.3, -4],
+      [4, -0.3, -4],
+      // //Back->Front
+      [-3, -0.3, -4],
+      [-1, -0.3, -4],
+      [1, -0.3, -4],
+      [3, -0.3, -4],
+      //L->R
+      [-4, 1.3, -3],
+      [-4, 1.3, -1],
+      [-4, 1.3, 1],
+      [-4, 1.3, 3],
+      //Diag L->R
+      [-4, 1.3, -4],
+      [4, 1.3, -4],
+      //Back->Front
+      [-3, 1.3, -4],
+      [-1, 1.3, -4],
+      [1, 1.3, -4],
+      [3, 1.3, -4],
+      // //L->R
+      [-4, 2.3, -3],
+      [-4, 2.3, -1],
+      [-4, 2.3, 1],
+      [-4, 2.3, 3],
+      //Diag L->R
+      [-4, 2.3, -4],
+      [4, 2.3, -4],
+      //Back->Front
+      [-3, 2.3, -4],
+      [-1, 2.3, -4],
+      [1, 2.3, -4],
+      [3, 2.3, -4],
+      // //L->R
+      [-4, 4, -3],
+      [-4, 4, -1],
+      [-4, 4, 1],
+      [-4, 4, 3],
+      //Diag L->R
+      [-4, 4, -4],
+      [4, 4, -4],
+      //Back->Front
+      [-3, 4, -4],
+      [-1, 4, -4],
+      [1, 4, -4],
+      [3, 4, -4],
 
+      // ////Down->Up
+      [-3, -1, -3],
+      [-1, -1, -3],
+      [1, -1, -3],
+      [3, -1, -3],
+      [-3, -1, -1],
+      [-1, -1, -1],
+      [1, -1, -1],
+      [3, -1, -1],
+      [-3, -1, 1],
+      [-1, -1, 1],
+      [1, -1, 1],
+      [3, -1, 1],
+      [-3, -1, 3],
+      [-1, -1, 3],
+      [1, -1, 3],
+      [3, -1, 3],
+
+      //down->up Diag Back->front
+      [-3, -2, -5],
+      [-1, -2, -5],
+      [1, -2, -5],
+      [3, -2, -5],
+      //Up->Down Diag Back->front
+      [-3, 6, -5],
+      [-1, 6, -5],
+      [1, 6, -5],
+      [3, 6, -5],
+
+      //down->up Diag Left->Right
+      [-5, -2, -3],
+      [-5, -2, -1],
+      [-5, -2, 1],
+      [-5, -2, 3],
+
+      //Up-Down Diag Left->Right
+      [-5, 6, -3],
+      [-5, 6, -1],
+      [-5, 6, 1],
+      [-5, 6, 3],
+
+      ///// DIAG BY DIAG
+      [-4, 5, -4],
+      [-4, 5, -4],
+      [-4, 5, 4],
+      [-5, -2, -4],
+      [-5, -2, 4],
+    ];
+    const rayDir = [
+      //L->R
+      [+4, 0, 0],
+      [+4, 0, 0],
+      [+4, 0, 0],
+      [+4, 0, 0],
+      [+4, 0, 0],
+      // //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      // //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      //L->R
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      //L->R
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      // //L->R
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      [+3, 0, 0],
+      //Diag L->R
+      [+4, 0, 4],
+      [-4, 0, 4],
+      //Back->Front
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+      [0, 0, 3],
+
+      // //Down->Up
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+      [0, 6, 0],
+
+      //down->up Diag Back->front
+      [0, 4, 5],
+      [0, 4, 5],
+      [0, 4, 5],
+      [0, 4, 5],
+
+      //Up->Down Diag Back->front
+      [0, -4, 5],
+      [0, -4, 5],
+      [0, -4, 5],
+      [0, -4, 5],
+
+      //down->up Diag Left-Right
+      [5, 4, 0],
+      [5, 4, 0],
+      [5, 4, 0],
+      [5, 4, 0],
+
+      //Up->Down Diag Left-Right
+      [5, -4, 0],
+      [5, -4, 0],
+      [5, -4, 0],
+      [5, -4, 0],
+
+      ///// DIAG BY DIAG
+      [3, -2, 3],
+      [4, -3, 4],
+      [4, -3, -4],
+      [5, 4, 4],
+      [5, 4, -4],
+    ];
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(axesHelper);
+
+    const radius = 0.7;
+
+    const createSphere = (radius, position) => {
+      // Three.js mesh
+      // played%2 !=0 mesh.name = player1 : mesh.name = player2
+      const mesh = new THREE.Mesh(
+        new THREE.SphereBufferGeometry(radius, 30, 30),
+        new THREE.MeshStandardMaterial({
+          color: played % 2 != 0 ? player1.color : player2.color,
+          roughness: 0.4,
+          //   wireframe: true,
+        })
+      );
+      mesh.castShadow = true;
+      mesh.position.copy(position);
+      scene.add(mesh);
+
+      // Cannon.js body
+      const shape = new CANNON.Sphere(radius);
+
+      const body = new CANNON.Body({
+        mass: 3,
+        position: position,
+        shape: shape,
+        material: defaultMaterial,
+      });
+      body.addShape(shape);
+      // body.position.copy(mesh.position)
+
+      mesh.position.copy(body.position);
+      world.addBody(body);
+      objectsToUpdate.push({ mesh, body });
+
+      return mesh;
+    };
     /**
- * Animate
+     * Animate
  console.log(gridHelper);
  */
+    function clearScene() {
+      var to_remove = [];
+      let removebody = [];
+      scene.traverse(function (child) {
+        // console.log(child)
+        if (
+          child instanceof THREE.Mesh &&
+          !child.userData.keepMe === true &&
+          child.geometry.type === 'SphereGeometry'
+        ) {
+          to_remove.push(child);
+        }
+      });
+      // world.traverse ( function( child ) {
+        // console.log(world.bodies[12].shapes)
+        for (let w = 0; w < world.bodies.length; w++) {
+          for(let wi=0; wi < world.bodies[w].shapes.length; wi++){
+            if (world.bodies[w].shapes[wi].radius === 0.7) {
+             removebody.push(world.bodies[w])
+            }
+          }
+          for (let i = 0; i< removebody.length; i++){
+            world.removeBody(removebody[i]);
+          }
+          console.log(world);
+        }
+        
+        for (var i = 0; i < to_remove.length; i++) {
+          scene.remove(to_remove[i]);
+        }
+    
+    }
+
     const clock = new THREE.Clock();
     let oldElapsedTime = 0;
 
     // Rays()
-
+    let stuff = 0;
     const tick = () => {
+      stats.begin();
+      if (stuff > 76) {
+        // setTimeout(()=> {}, '2000')
+        stuff = 0;
+      }
+
       const elapsedTime = clock.getElapsedTime();
       const deltaTime = elapsedTime - oldElapsedTime;
       oldElapsedTime = elapsedTime;
 
       controls.update();
 
-      raycaster.setFromCamera(mouse, camera);
 
+
+      raycaster.setFromCamera(mouse, camera);
+      // console.log(raycaster)
+      // console.log(raycaster.ray.direction)
+      // const rayOrigin2 = new THREE.Vector3(-4, 0, 4);
+      // const rayDirection2 = new THREE.Vector3(9, 0, -0.01);
+      if (stuff) {
+        const rayOrigin2 = new THREE.Vector3(...rayOr[stuff]);
+        const rayDirection2 = new THREE.Vector3(...rayDir[stuff]);
+        rayDirection2.normalize();
+        raycaster2.set(rayOrigin2, rayDirection2);
+        // console.log(rayOrigin2, rayDirection2)
+
+        if (arrBall.length > 1) {
+          // console.log(raycaster2.ray.origin)
+          // let arrow = new THREE.ArrowHelper(
+          //   raycaster2.ray.direction,
+          //   raycaster2.ray.origin,
+          //   8,
+          //   0xff0000
+          // );
+          // scene.add(arrow);
+
+          let intersection2 = raycaster2.intersectObjects(arrBall);
+          for (const obj of arrBall) {
+            // obj.material.color = new THREE.Color('#000000')
+            for (const intersect of intersection2) {
+              // if (intersection2.length > 1) {
+              //   intersect.object.material.color = new THREE.Color('#ffffff');
+              // }
+              if (intersection2.length === 4) {
+                let flute = 0;
+                // console.log(intersection2);
+                for (let i = 0; i < intersection2.length; i++) {
+                  if (intersection2[i].object.name === 'p1') {
+                    flute += 2;
+                  } else if (intersection2[i].object.name === 'p2') {
+                    flute -= 2;
+                  }
+                }
+
+                if (flute === 8) {
+                  // console.log('ouimadamebonjour');
+                  setWin1(true);
+                  clicked = 2;
+
+                } else if (flute === -8) {
+                  // console.log('ouimadamebonjour');
+                  setWin2(true);
+                  clicked = 2;
+
+                }
+                // }
+                // intersect.object.material.color = new THREE.Color('#ff00ff');
+                // console.log(intersection2)
+                if(clicked === 2){
+                  clearScene();
+                  // played = 0
+                  setWin1(false)
+                  setWin2(false)
+                  flute = 0;
+                  arrBall =[]
+                }
+              }
+              // console.log('interlenght', intersection2.length)
+            }
+          }
+        }
+      }
       const intersection = raycaster.intersectObjects(cellsToTest);
       for (const object of cellsToTest) {
         object.material = cubeMat;
@@ -423,8 +739,10 @@ const ThreeScene = () => {
         arrBall[i].rotation.x = Math.sin(elapsedTime * 2) * 2;
       }
 
-     document.addEventListener('mousedown', onMouseDown);
-     document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mousedown', onMouseDown);
+      document.addEventListener('touchstart', onMouseDown);
+      document.addEventListener('mouseup', onMouseUp);
+      // document.addEventListener('touchend', onMouseUp);
 
       if (intersection[0] !== undefined && clicked === 1) {
         clicked = 0;
@@ -435,61 +753,48 @@ const ThreeScene = () => {
           intersection[0].object.position.z
         );
         const sphere = createSphere(radius, pos);
-        console.log('Sphere Created');
+        // console.log('Sphere Created');
+        played % 2 != 0 ? (sphere.name = 'p1') : (sphere.name = 'p2');
+        // console.log(sphere)
         arrBall.push(sphere);
         played += 1;
-
-        if (clicked > 1 && clicked !== 0) {
-          clicked = 0;
-          setTimeout(() => {}, '50');
-        }
-        raycaster2.set(rayOrigin2, rayDirection2);
-        // if (arrBall.length > 2) {
-        // raycaster.layers.set(4);
-        // raycaster.set(rayOrigin2, rayDirection2);
-        // console.log('arrball', raycaster , arrBall)
-        // setTimeout(()=>{ }, '500')
-        // for (const balls of arrBall) {
-        // console.log('raycast', raycaster, arrBall);
-        const intersection2 = raycaster2.intersectObjects(arrBall);
-        console.log('inter2', raycaster2, intersection2);
-        console.log(raycaster);
-        // if (intersection2 !== undefined) {
-        //   // sphere.material = cubeMat
-        //   sphere.material = new THREE.MeshBasicMaterial({ color: 'yellow' });
-        //   // } else null
-        //   console.log('interrrrrr', intersection2.length);
-        // } else sphere.material.color = '#ff0000';
       } else null;
+      if (clicked > 1 && clicked !== 0) {
+        clicked = 0;
+        setTimeout(() => {}, '50');
+      }
+      // raycaster2.set(rayOrigin2, rayDirection2);
 
       for (const object of objectsToUpdate) {
         object.mesh.position.copy(object.body.position);
         object.mesh.quaternion.copy(object.body.quaternion);
       }
 
-      // console.log(arrBall);
+
+      stuff++;
+
       world.step(1 / 60, deltaTime, 3);
-      // scene.updateMatrixWorld()
       // Update controls
-      // cannonDebugger.update();
+
+      cannonDebugger.update();
       // Render
       renderer.render(scene, camera);
 
+      stats.end();
       // Call tick again on the next frame
       window.requestAnimationFrame(tick);
     };
 
     tick();
-    return () => mountRef.current.removeChild(renderer.domElement);
+    // return () => mountRef.current.removeChild(renderer.domElement);
     // }
   }, []);
 
   return (
     <>
-      <p>tacos</p>
-      <div >
-        <canvas id="myCanvas"/>
-        </div>
+      <div>
+        <canvas id='myCanvas' />
+      </div>
     </>
   );
 };

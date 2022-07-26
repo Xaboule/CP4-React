@@ -5,18 +5,17 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+@font-face {
+  font-family: prism;
+  src: url('./assets/Prism-Regular.otf');
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
+ h1{
+  font-family: prism;
+  font-size: 9rem;
+  margin-top: 3;
+  color: aliceblue;
+  margin-left: 10rem;
+ }
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -60,18 +59,26 @@ margin-top: 20rem;
 #btn{
   display: flex;
   /* flex-direction: column-reverse; */
-  /* position: absolute; */
+  position: absolute;
   z-index: 200;
   width: 4rem;
   height: 4rem;
   justify-content: space-around;
+  align-content: center;
   /* margin-bottom: 30rem; */
   width:100vw;
-
+  margin: 0.5rem;
 
 }
-button{
+#btn > button{
   /* position: absolute; */
-  height: 2rem;
+  justify-content: center;
+  height: 3rem;
   z-index: 2000;
+  display: flex;
+  align-content: center;
 }
+body{
+  background-color: rgb(24, 24, 24);
+}
+
