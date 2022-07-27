@@ -27,6 +27,9 @@ function App() {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/playerUpdate`);
   };
 
+  function onWinPlus(){
+
+  }
   console.log(win1)
   return (
     <div className='App'>
@@ -47,12 +50,12 @@ function App() {
           </>
       ) : null}
 
-       {/* {win1 === true || win2 === true ? (<PopupWin
+       {win1 === true || win2 === true ? (<PopupWin
        win1={win1}
        win2={win2}
        name1={name1}
        name2={name2}
-       />) : null} */}
+       />) : null}
  {/* {win1 === true ? (<Popup className='popupwin'><div>{name1} wins </div></Popup>) : win2 === true ? (<Popup className='popupwin'><div> {name2} wins</div></Popup>): null} */}
       {/* {win1 === false && win2 === false &&  */}
       {play ? (
@@ -60,16 +63,20 @@ function App() {
       <ThreeScene 
       ball1={ball1}
       ball2={ball2}
-      setWin1={setWin1}
-      setWin2={setWin2}
+      // setWin1={setWin1}
+      // setWin2={setWin2}
+      setPlayer1={setPlayer1}
+      setPlayer2={setPlayer2}
+      player1={player1}
+      player2={player2}
       />
     
       <div id='can-btn'>
         <div id='btn'>
-          <button onClick={() => setPlayer1((player1) => player1 + 1)}>
+          <button onChange={() => setPlayer1((player1) => player1 + 1)}>
             {name1} wins : {player1}
           </button>
-          <button onClick={() => setDraw((draw) => draw + 1)}>
+          <button onChange={() => setDraw((draw) => draw + 1)}>
             Draws : {draw}
           </button>
           <button
