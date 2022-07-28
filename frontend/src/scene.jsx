@@ -207,7 +207,7 @@ const ThreeScene = ({
 
     const lightTile = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(2, 2),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: '#ffffff',
         transparent: true,
         opacity: 0,
@@ -679,10 +679,7 @@ const ThreeScene = ({
       controls.update();
 
       raycaster.setFromCamera(mouse, camera);
-      // console.log(raycaster)
-      // console.log(raycaster.ray.direction)
-      // const rayOrigin2 = new THREE.Vector3(-4, 0, 4);
-      // const rayDirection2 = new THREE.Vector3(9, 0, -0.01);
+
       if (stuff) {
         const rayOrigin2 = new THREE.Vector3(...rayOr[stuff]);
         const rayDirection2 = new THREE.Vector3(...rayDir[stuff]);
@@ -691,7 +688,6 @@ const ThreeScene = ({
         // console.log(rayOrigin2, rayDirection2)
 
         if (arrBall.length > 1) {
-          // console.log(raycaster2.ray.origin)
           // let arrow = new THREE.ArrowHelper(
           //   raycaster2.ray.direction,
           //   raycaster2.ray.origin,
@@ -702,14 +698,9 @@ const ThreeScene = ({
 
           let intersection2 = raycaster2.intersectObjects(arrBall);
           for (const obj of arrBall) {
-            // obj.material.color = new THREE.Color('#000000')
             for (const intersect of intersection2) {
-              // if (intersection2.length > 1) {
-              //   intersect.object.material.color = new THREE.Color('#ffffff');
-              // }
               if (intersection2.length === 4) {
                 let flute = 0;
-                // console.log(intersection2);
                 for (let i = 0; i < intersection2.length; i++) {
                   if (intersection2[i].object.name === 'p1') {
                     flute += 2;
@@ -727,9 +718,6 @@ const ThreeScene = ({
                   setWin2(true);
                   clicked = 2;
                 }
-                // }
-                // intersect.object.material.color = new THREE.Color('#ff00ff');
-                // console.log(intersection2)
                 if (clicked === 2) {
                   setTimeout(() => {
                     clearScene();
