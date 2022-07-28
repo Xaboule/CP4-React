@@ -6,15 +6,24 @@ import CannonDebugger from 'cannon-es-debugger';
 import Grid from './grid.js';
 import Grid90 from './grid90';
 import { BackSide, DoubleSide, SphereGeometry } from 'three';
-import gsap from 'gsap';
 import './style.css';
 import Stats from 'stats.js';
+import normalus from './assets/needles_01_normal.jpg';
 
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
-const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, player2, setPlayer2 }) => {
+const ThreeScene = ({
+  ball1,
+  ball2,
+  setWin1,
+  setWin2,
+  player1,
+  setPlayer1,
+  player2,
+  setPlayer2,
+}) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -31,18 +40,34 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
 
     const raycaster = new THREE.Raycaster();
     //lights
+    const textureloader = new THREE.TextureLoader();
+    const clearcoatNormal = textureloader.load(normalus);
+    clearcoatNormal.wrapS = THREE.RepeatWrapping;
+    clearcoatNormal.wrapT = THREE.RepeatWrapping;
+    clearcoatNormal.magFilter = THREE.NearestFilter
+    const loader = new THREE.CubeTextureLoader();
+    loader.setPath('frontend/src/assets/cubeimgs/');
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    var textureCube = loader.load([
+      'posx.jpg',
+      'negx.jpg',
+      'posy.jpg',
+      'negy.jpg',
+      'posz.jpg',
+      'negz.jpg',
+    ]);
+
+    const mainLight = new THREE.AmbientLight(0xffffff, 0.8);
     mainLight.position.y = 8;
-    mainLight.castShadow = true;
-    mainLight.shadow.radius = 1;
+    // mainLight.castShadow = true;
+    // mainLight.shadow.radius = 1;
     // const helper = new THREE.DirectionalLightHelper(mainLight, 5)
     scene.add(mainLight);
 
-    const pointLight = new THREE.SpotLight(0xf000f0, 1);
+    const pointLight = new THREE.DirectionalLight(0xf000f0, 1);
     pointLight.position.y = 5;
     pointLight.position.x = 0;
-    pointLight.position.z = 0;
+    pointLight.position.z = -8;
     pointLight.penumbra = 0.2;
     pointLight.castShadow = true;
     scene.add(pointLight);
@@ -56,7 +81,7 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
 
     scene.add(caseBox);
     ///////// Plane
-    const planeMat = new THREE.MeshStandardMaterial({
+    const planeMat = new THREE.MeshBasicMaterial({
       transparent: true,
       opacity: 0,
     });
@@ -198,7 +223,12 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
      *
      * Objects
      */
-    let played = 0;
+    function getRandomInt() {
+      return Math.round(Math.random() * 1);
+    }
+    let setplay = 0;
+    let played = setplay + getRandomInt();
+    console.log('playedTop', played);
 
     const player1 = {
       color: ball1,
@@ -555,11 +585,21 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
 
     const createSphere = (radius, position) => {
       // Three.js mesh
+      console.log(clearcoatNormal);
       const mesh = new THREE.Mesh(
         new THREE.SphereBufferGeometry(radius, 30, 30),
-        new THREE.MeshStandardMaterial({
+        new THREE.MeshPhysicalMaterial({
           color: played % 2 != 0 ? player1.color : player2.color,
-          roughness: 0.4,
+          // normalMap : clearcoatNormal,
+          roughness: 0.8,
+          clearcoat: 1,
+          // clearcoatRoughness: 0.1,
+          reflectivity: 0.2,
+          clearcoatNormalMap: clearcoatNormal,
+          clearcoatNormalScale: new THREE.Vector2(1.3,-2),
+          metalness: 0.7,
+          envMap: textureCube,
+          envMapIntensity: 0.2,
           //   wireframe: true,
         })
       );
@@ -587,7 +627,7 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
     };
     /**
      * Animate
- */
+     */
     function clearScene() {
       var to_remove = [];
       let removebody = [];
@@ -616,6 +656,9 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
       for (var i = 0; i < to_remove.length; i++) {
         scene.remove(to_remove[i]);
       }
+      setplay = 0;
+      played = setplay + getRandomInt();
+      console.log('played', played);
     }
 
     const clock = new THREE.Clock();
@@ -677,26 +720,25 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
 
                 if (flute === 8) {
                   // console.log('ouimadamebonjour');
-                  setPlayer1(player1 + 1);
+                  setWin1(true);
                   clicked = 2;
                 } else if (flute === -8) {
                   // console.log('ouimadamebonjour');
-                  setPlayer2(player2 + 1);
+                  setWin2(true);
                   clicked = 2;
                 }
                 // }
                 // intersect.object.material.color = new THREE.Color('#ff00ff');
                 // console.log(intersection2)
                 if (clicked === 2) {
-                  setTimeout(()=>{
-
+                  setTimeout(() => {
                     clearScene();
                     // played = 0
                     setWin1(false);
                     setWin2(false);
                     flute = 0;
                     arrBall = [];
-                  }, '2000')
+                  }, '2000');
                 }
               }
               // console.log('interlenght', intersection2.length)
@@ -746,6 +788,7 @@ const ThreeScene = ({ ball1, ball2, setWin1, setWin2, player1, setPlayer1, playe
           intersection[0].object.position.z
         );
         const sphere = createSphere(radius, pos);
+        console.log(played);
         // console.log('Sphere Created');
         played % 2 != 0 ? (sphere.name = 'p1') : (sphere.name = 'p2');
         // console.log(sphere)

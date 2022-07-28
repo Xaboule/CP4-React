@@ -28,6 +28,7 @@ function Form({
                 type='text'
                 id='name'
                 value={name1}
+                autoComplete="off"
                 onChange={(e) => setName1(e.target.value)}
               ></input>
               <button type='button' onClick={onSubmit}>
@@ -49,6 +50,7 @@ function Form({
                 type='text'
                 id='name'
                 value={name2}
+                autoComplete="off"
                 onChange={(e) => setName2(e.target.value)}
               ></input>
               <button type='submit'> OK </button>

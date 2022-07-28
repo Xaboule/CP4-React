@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import ThreeScene from './scene';
 import Form from '../components/form';
@@ -28,8 +28,13 @@ function App() {
   };
 
   function onWinPlus(){
-
   }
+  
+  useEffect(() => {
+    win1 === true ?  setPlayer1(player1 + 1) : win2 === true ? setPlayer2(player2 + 1) : null
+    
+  }, [win1, win2])
+  
   console.log(win1)
   return (
     <div className='App'>
@@ -56,34 +61,31 @@ function App() {
        name1={name1}
        name2={name2}
        />) : null}
- {/* {win1 === true ? (<Popup className='popupwin'><div>{name1} wins </div></Popup>) : win2 === true ? (<Popup className='popupwin'><div> {name2} wins</div></Popup>): null} */}
-      {/* {win1 === false && win2 === false &&  */}
+
       {play ? (
         <>
       <ThreeScene 
       ball1={ball1}
       ball2={ball2}
-      // setWin1={setWin1}
-      // setWin2={setWin2}
-      setPlayer1={setPlayer1}
-      setPlayer2={setPlayer2}
+      setWin1={setWin1}
+      setWin2={setWin2}
       player1={player1}
       player2={player2}
       />
     
       <div id='can-btn'>
         <div id='btn'>
-          <button onChange={() => setPlayer1((player1) => player1 + 1)}>
+          <span>
             {name1} wins : {player1}
-          </button>
-          <button onChange={() => setDraw((draw) => draw + 1)}>
+          </span >
+          <span onChange={() => setDraw((draw) => draw + 1)}>
             Draws : {draw}
-          </button>
-          <button
+          </span>
+          <span
             onClick={() => sendUpdate(setPlayer2((player2) => player2 + 1))}
             >
             {name2} wins : {player2}
-          </button>
+          </span>
         </div>
       </div>
       </>
