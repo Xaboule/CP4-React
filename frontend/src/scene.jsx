@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useRef } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es';
@@ -14,6 +14,7 @@ const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
+
 const ThreeScene = ({
   ball1,
   ball2,
@@ -25,7 +26,8 @@ const ThreeScene = ({
   setPlayer2,
 }) => {
   const mountRef = useRef(null);
-
+  
+  const [turn, setTurn] = useState(false)
   useEffect(() => {
     /**
      * Base
@@ -42,6 +44,7 @@ const ThreeScene = ({
     //lights
     const textureloader = new THREE.TextureLoader();
     const clearcoatNormal = textureloader.load(normalus);
+    const BluePlayDo = textureloader.load('./assets/matcap/BluePlayDo.png ')
     clearcoatNormal.wrapS = THREE.RepeatWrapping;
     clearcoatNormal.wrapT = THREE.RepeatWrapping;
     clearcoatNormal.magFilter = THREE.NearestFilter
@@ -382,18 +385,19 @@ const ThreeScene = ({
       console.log(clearcoatNormal);
       const mesh = new THREE.Mesh(
         new THREE.SphereBufferGeometry(radius, 30, 30),
-        new THREE.MeshPhysicalMaterial({
+        new THREE.MeshMatcapMaterial({
           color: played % 2 != 0 ? player1.color : player2.color,
+          // matcap : BluePlayDo,
           // normalMap : clearcoatNormal,
           roughness: 0.8,
           clearcoat: 1,
           // clearcoatRoughness: 0.1,
           reflectivity: 0.2,
-          clearcoatNormalMap: clearcoatNormal,
-          clearcoatNormalScale: new THREE.Vector2(1.3,-2),
+          // clearcoatNormalMap: clearcoatNormal,
+          // clearcoatNormalScale: new THREE.Vector2(1.3,-2),
           metalness: 0.7,
-          envMap: textureCube,
-          envMapIntensity: 0.2,
+          // envMap: textureCube,
+          // envMapIntensity: 0.2,
           //   wireframe: true,
         })
       );
@@ -463,6 +467,7 @@ const ThreeScene = ({
     const tick = () => {
       stats.begin();
       if (stuff > 76) {
+        setTurn(false)
         stuff = 0;
       }
 
@@ -480,15 +485,17 @@ const ThreeScene = ({
         rayDirection2.normalize();
         raycaster2.set(rayOrigin2, rayDirection2);
         // console.log(rayOrigin2, rayDirection2)
-
+        let arrows = []
         if (arrBall.length > 1) {
-          // let arrow = new THREE.ArrowHelper(
-          //   raycaster2.ray.direction,
-          //   raycaster2.ray.origin,
-          //   8,
-          //   0xff0000
-          // );
-          // scene.add(arrow);
+          let arrow = new THREE.ArrowHelper(
+            raycaster2.ray.direction,
+            raycaster2.ray.origin,
+            8,
+            0xff0000
+          );
+          scene.add(arrow);
+
+      
 
           let intersection2 = raycaster2.intersectObjects(arrBall);
           for (const obj of arrBall) {
@@ -557,12 +564,13 @@ const ThreeScene = ({
       }
 
       document.addEventListener('mousedown', onMouseDown);
-      document.addEventListener('touchstart', onMouseDown);
+      if (intersection[0] !== undefined){document.addEventListener('touchstart', onMouseDown);}
       document.addEventListener('mouseup', onMouseUp);
-      // document.addEventListener('touchend', onMouseUp);
+      if (intersection[0] !== undefined){document.addEventListener('touchend', onMouseUp);}
 
       if (intersection[0] !== undefined && clicked === 1) {
         clicked = 0;
+        setTurn(true)
         removeEventListener('mousedown', onMouseDown);
         let pos = new THREE.Vector3(
           intersection[0].object.position.x,
@@ -581,7 +589,6 @@ const ThreeScene = ({
         clicked = 0;
         setTimeout(() => {}, '50');
       }
-      // raycaster2.set(rayOrigin2, rayDirection2);
 
       for (const object of objectsToUpdate) {
         object.mesh.position.copy(object.body.position);
@@ -596,7 +603,7 @@ const ThreeScene = ({
       // cannonDebugger.update();
       // Render
       renderer.render(scene, camera);
-
+      THREE.Cache.clear()
       stats.end();
       // Call tick again on the next frame
       window.requestAnimationFrame(tick);
